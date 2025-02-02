@@ -14,6 +14,29 @@ const router = express.Router();
  * @param {string} bio - The bio of the user
  * @param {string[]} availabilityTime - The availability time eg. ["09:00-17:00","10:00-18:00"]
  * @note All fields are optional, but at least one field is required
+ * 
+ * @example 
+ * {
+	"name":"updated name",
+	"bio":"updated bio"
+    }
+ * @returns {
+	"message": "User updated successfully",
+	"user": {
+		"id": 12,
+		"name": "updated name",
+		"contact": "8439345464",
+		"bio": "updated bio",
+		"email": "yashpal9rx@gmail.com",
+		"password": "$2b$10$riAFTkd6EtMnOH4EzUEwrehxCoPdJZc5Qe1nATn7cbopu7gKqmO3K",
+		"availabilityTime": [
+			"06:00-10:00",
+			"14:00-23:00"
+		],
+		"role": "USER",
+		"createdAt": "2025-02-02T18:13:55.268Z"
+	}
+}
  */
 router.put('/profile', async(req: Request, res: Response, next: NextFunction) => {
     const isValid = userUpdateSchema.safeParse(req.body);

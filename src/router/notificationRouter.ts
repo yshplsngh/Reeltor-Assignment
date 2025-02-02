@@ -12,7 +12,13 @@ const router = express.Router()
  * @route POST /api/v1/user/notification
  * @param {string} message - The message to be sent
  * @param {string[]} receiverIds - The ids of the users to be sent notification
- * @returns {string} 
+ * @returns {string}
+ * @example {
+    "message":"Hello",
+    "receiverIds":[1,2],
+    "messageType":"NORMAL"
+    }
+ * @returns {"message": "Notification sent successfully"}
  */
 router.post('/send', async (req: Request, res: Response, next: NextFunction) => {
     const isValid = sendNotificationSchema.safeParse(req.body)
@@ -61,6 +67,20 @@ router.post('/send', async (req: Request, res: Response, next: NextFunction) => 
  * @description Fetch notifications on starting of the website, only if user is logged, current time is in user's availability time
  * @route GET /api/v1/notification/get
  * @returns {getNotificationType[]}
+ * @example {
+	"notifications": [
+		{
+			"id": 11,
+			"message": "testing message",
+			"messageType": "NORMAL",
+			"sender": {
+				"id": 12,
+				"name": "updated name",
+				"email": "yashpal9rx@gmail.com"
+			}
+		}
+	]
+}
  */
 router.get('/get', async (req: Request, res: Response, next: NextFunction) => {
     const user = await prisma.user.findUnique({
