@@ -3,10 +3,14 @@ import express, { NextFunction, Request, Response } from "express";
 import cors from "cors";
 import morgan from "morgan";
 import cookieParser from "cookie-parser";
-import { errorHandler, uncaughtExceptionHandler } from "./utils/middleware/errorHandler";
+
 import authRouter from "./router/authRouter";
-import jwt from "jsonwebtoken";
+import userRouter from "./router/userRouter";
+
+import { errorHandler, uncaughtExceptionHandler } from "./utils/middleware/errorHandler";
 import { deserializeUser } from "./utils/middleware/deserializeUser";
+import rateLimiter from "./utils/middleware/rateLimit";
+import { userRequired } from "./utils/middleware/roleCheck";
 
 const app = express();
 
@@ -33,13 +37,9 @@ app.all('/', (_req: Request, res: Response) => {
         RunTime: process.uptime(),
     });
 });
-app.use('/api/v1/auth', authRouter)
-app.get('/api/v1/user', (req: Request, res: Response, next: NextFunction) => {
-    const decode = jwt.verify("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiaWF0IjoxNzM4NDkxNDQ3LCJleHAiOjE3Mzg0OTUwNDd9.K6D6xBJuGGPFmh5GQTH5zxcdHZ8VWh5Q1agmdelBQwI", config.JWT_SECRET);
-    res.status(200).json({
-        decode
-    });
-})
+app.use('/api/v1/auth', rateLimiter, authRouter)
+app.use('/api/v1/user', rateLimiter, userRequired, userRouter);
+
 
 // these will handle the uncaught exceptions and unhandled rejections
 process.on('unhandledRejection', uncaughtExceptionHandler);

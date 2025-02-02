@@ -1,7 +1,6 @@
 import express, { Request, Response, NextFunction, CookieOptions } from "express";
 import bcrypt from "bcrypt";
 import prisma from "../database";
-import rateLimiter from "../utils/middleware/rateLimit";
 import { loginSchema, registerSchema } from "../types/authTypes";
 import { createError } from "../utils/middleware/errorHandler";
 import { config } from "../utils/config";
@@ -27,7 +26,7 @@ export const tokenCookieOptions:CookieOptions = {
  * @param {string} password - The password of the user
  * @param {string[]} availabilityTime - The availability time of the user
  */
-router.post('/register', rateLimiter, async(req: Request, res: Response, next: NextFunction) => {
+router.post('/register', async(req: Request, res: Response, next: NextFunction) => {
     const isValid = registerSchema.safeParse(req.body);
     if(!isValid.success){
         next(isValid.error);
@@ -64,7 +63,7 @@ router.post('/register', rateLimiter, async(req: Request, res: Response, next: N
  * @param {string} email - The email of the user
  * @param {string} password - The password of the user
  */
-router.post('/login', rateLimiter, async(req: Request, res: Response, next: NextFunction) => {
+router.post('/login',async(req: Request, res: Response, next: NextFunction) => {
     const isValid = loginSchema.safeParse(req.body);
     if(!isValid.success){
         next(isValid.error);
@@ -93,8 +92,6 @@ router.post('/login', rateLimiter, async(req: Request, res: Response, next: Next
 
     res.status(200).json({
         message: "User logged in successfully",
-        accessToken,
-        refreshToken,
     })
 })
 
