@@ -1,6 +1,6 @@
 import { ZodError } from "zod";
 import { NextFunction, Request, Response } from "express";
-import { zodErrorToString } from "./zodErrorToString";
+import { zodErrorToString } from "../zodErrorToString";
 
 interface handleErrorType {
     message: string;
