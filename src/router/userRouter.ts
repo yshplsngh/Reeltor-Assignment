@@ -12,7 +12,7 @@ const router = express.Router();
  * @param {string} name - The name of the user
  * @param {string} contact - The contact number of the user
  * @param {string} bio - The bio of the user
- * @param {string[]} availabilityTime - The availability time of the user
+ * @param {string[]} availabilityTime - The availability time eg. ["09:00-17:00","10:00-18:00"]
  * @note All fields are optional, but at least one field is required
  */
 router.put('/profile', async(req: Request, res: Response, next: NextFunction) => {

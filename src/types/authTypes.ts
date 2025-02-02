@@ -6,7 +6,7 @@ export const registerSchema = z.object({
     bio: z.string().min(2).max(100),
     email: z.string().email(),
     password: z.string().min(2).max(25),
-    availabilityTime: z.array(z.string().min(1).max(20)).min(1).max(7),
+    availabilityTime: z.array(z.string().min(5).max(20)).length(5),
 }).strict()
 
 export const loginSchema = z.object({

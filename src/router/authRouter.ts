@@ -24,7 +24,7 @@ export const tokenCookieOptions:CookieOptions = {
  * @param {string} bio - The bio of the user
  * @param {string} email - The email of the user
  * @param {string} password - The password of the user
- * @param {string[]} availabilityTime - The availability time of the user
+ * @param {string[]} availabilityTime - The availability time eg. ["09:00-17:00","10:00-18:00"]
  */
 router.post('/register', async(req: Request, res: Response, next: NextFunction) => {
     const isValid = registerSchema.safeParse(req.body);

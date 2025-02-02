@@ -14,18 +14,35 @@ datasource db {
 }
 
 model User {
-  id               Int      @id @default(autoincrement())
-  name             String
-  contact          String
-  bio              String
-  email            String   @unique
-  password         String
-  availabilityTime String[]
-  role             Role     @default(USER)
-  createdAt        DateTime @default(now())
+  id                    Int            @id @default(autoincrement())
+  name                  String
+  contact               String
+  bio                   String
+  email                 String         @unique
+  password              String
+  availabilityTime      String[]
+  role                  Role           @default(USER)
+  sentNotifications     Notification[] @relation("SentNotifications")
+  receivedNotifications Notification[] @relation("ReceivedNotifications")
+  createdAt             DateTime       @default(now())
+}
+
+model Notification {
+  id          Int                @id @default(autoincrement())
+  message     String
+  status      NotificationStatus @default(PENDING)
+  senderId    Int
+  sender      User               @relation("SentNotifications", fields: [senderId], references: [id])
+  receivers   User[]             @relation("ReceivedNotifications")
+  createdAt   DateTime           @default(now())
+  deliveredAt DateTime
 }
 
 enum Role {
   ADMIN
   USER
+}
+enum NotificationStatus {
+  PENDING
+  SENT
 }
