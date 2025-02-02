@@ -30,12 +30,10 @@ model User {
 model Notification {
   id          Int                @id @default(autoincrement())
   message     String
-  status      NotificationStatus @default(PENDING)
   senderId    Int
   sender      User               @relation("SentNotifications", fields: [senderId], references: [id])
   receivers   User[]             @relation("ReceivedNotifications")
   createdAt   DateTime           @default(now())
-  deliveredAt DateTime
 }
 
 enum Role {

@@ -6,6 +6,7 @@ import cookieParser from "cookie-parser";
 
 import authRouter from "./router/authRouter";
 import userRouter from "./router/userRouter";
+import notificationRouter from "./router/notificationRouter";
 
 import { errorHandler, uncaughtExceptionHandler } from "./utils/middleware/errorHandler";
 import { deserializeUser } from "./utils/middleware/deserializeUser";
@@ -28,6 +29,7 @@ app.use(cors({
     credentials: true
 }));
 
+// it will extract user detail from jwt token and put them into res.locals.user
 app.use(deserializeUser)
 
 // routes
@@ -39,6 +41,7 @@ app.all('/', (_req: Request, res: Response) => {
 });
 app.use('/api/v1/auth', rateLimiter, authRouter)
 app.use('/api/v1/user', rateLimiter, userRequired, userRouter);
+app.use('/api/v1/notification', rateLimiter,userRequired, notificationRouter);
 
 
 // these will handle the uncaught exceptions and unhandled rejections
