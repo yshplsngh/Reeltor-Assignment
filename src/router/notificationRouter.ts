@@ -2,6 +2,7 @@ import express, { Request, Response, NextFunction } from "express";
 import { sendNotificationSchema } from "../types/notificationTypes";
 import prisma from '../database'
 import { getNotificationType } from "../types/notificationTypes";
+import { createError } from "../utils/middleware/errorHandler";
 const router = express.Router()
 
 
@@ -9,12 +10,18 @@ const router = express.Router()
  * @description Send notification to one or more users
  * @route POST /api/v1/user/notification
  * @param {string} message - The message to be sent
- * @param {string[]} receiverIds - The ids of the users to be notified
+ * @param {string[]} receiverIds - The ids of the users to be sent notification
  */
 router.post('/send', async (req: Request, res: Response, next: NextFunction) => {
     const isValid = sendNotificationSchema.safeParse(req.body)
     if (!isValid.success) {
         next(isValid.error)
+        return;
+    }
+
+    // it will stop user from sending notification to himself
+    if(isValid.data.receiverIds.includes(res.locals.user.id)){
+        next(new createError('You cannot send notification to yourself',400))
         return;
     }
 
@@ -34,13 +41,36 @@ router.post('/send', async (req: Request, res: Response, next: NextFunction) => 
 })
 
 /**
- * @description Fetch notifications when user is logged in
+ * @description Fetch notifications when user is logged in only in his availability time
  * @route GET /api/v1/notification/get
  * @returns {getNotificationType[]}
  */
 router.get('/get', async (req: Request, res: Response, next: NextFunction) => {
+    const user = await prisma.user.findUnique({
+        where: { id: 2 },
+        select: {
+            availabilityTime: true
+        }
+    })
+
+    if(!user){
+        next(new createError('User not found',404))
+        return;
+    }
+
+    //check if user is available now
+    const isAvailableNow = checkAvailability(user.availabilityTime)
+
+    // if user is not available now, return empty array
+    if(!isAvailableNow){
+        res.status(200).json({
+            notifications: []
+        })
+        return;
+    }
+
     const notifications = await prisma.user.findUnique({
-        where: { id: res.locals.user.id },
+        where: { id: 2 },
         select: {
             receivedNotifications: {
                 select: {
@@ -66,5 +96,14 @@ router.get('/get', async (req: Request, res: Response, next: NextFunction) => {
     })
 })
 
+const checkAvailability = (availabilityTime: string[]) => {
+    const now = new Date()
+    const currentTime = `${now.getHours()}:${now.getMinutes()}`
+    return availabilityTime.some(slot => {
+        const [start, end] = slot.split('-')
+        if (!start || !end) return false
+        return currentTime >= start && currentTime <= end
+    })
+}
 
 export default router;

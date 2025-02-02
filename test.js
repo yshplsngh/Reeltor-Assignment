@@ -1,4 +1,5 @@
-const str = "userId";
+const time1 = "10:00"
+const time2 = "23:00"
+const currentTime = `${new Date().getHours()}:${new Date().getMinutes()}`
 
-console.log(str[0])
-console.log(str.charAt(0))
+console.log(currentTime<time2)
