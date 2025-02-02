@@ -15,7 +15,7 @@ services:
 
   api:
     build:
-      context: ./Dockerfile
+      context: .
       dockerfile: Dockerfile
     ports:
       - "4000:4000"
