@@ -4,6 +4,7 @@ import jwt from "jsonwebtoken";
 
 interface JWTPayload {
     id: number;
+    role: string;
     iat: number;  // issued at timestamp
     exp: number;  // expiration timestamp
 }
@@ -14,7 +15,7 @@ interface JWTPayload {
  * @param options - the options for the JWT token
  * @returns the signed JWT token
  */
-export const signJWT = (user: { id: number }, options?: jwt.SignOptions) => {
+export const signJWT = (user: { id: number, role: string }, options?: jwt.SignOptions) => {
     return jwt.sign(user, config.JWT_SECRET, { ...(options && options) })
 }
 
@@ -32,7 +33,7 @@ export const validateToken = async (token: string) => {
                 id: decoded.id
             }
         })
-        if (!checkUser) {
+        if (!checkUser || checkUser.role !== decoded.role) {
             return {
                 decoded: null,
                 valid: false

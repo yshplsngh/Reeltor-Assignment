@@ -41,7 +41,7 @@ export const deserializeUser = async (req: Request, res: Response, next: NextFun
         }
 
         // if user is found, then sign the access token
-        const accessToken = signJWT({id:user.id},{expiresIn:config.ATTL});
+        const accessToken = signJWT({id:user.id, role: user.role},{expiresIn:config.ATTL});
 
         // set the access Token in the cookie
         res.cookie("accessToken",accessToken,tokenCookieOptions);

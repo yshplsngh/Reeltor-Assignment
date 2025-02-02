@@ -84,7 +84,7 @@ router.post('/login', rateLimiter, async(req: Request, res: Response, next: Next
         next(new createError("Invalid credentials",400));
         return;
     }
-    const user = {id: userFound.id};
+    const user = {id: userFound.id, role: userFound.role};
     const accessToken = signJWT(user,{expiresIn: config.ATTL});
     const refreshToken = signJWT(user,{expiresIn: config.RFTL});
 
